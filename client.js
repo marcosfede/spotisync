@@ -1,19 +1,29 @@
-var ioclient = require("socket.io-client")
+const ioclient = require("socket.io-client")
 const { spawn } = require("child_process")
-var argv = require("minimist")(process.argv.slice(2))
+const app = require("express")()
+const http = require("http").Server(app)
+const bodyParser = require("body-parser")
 
-let socket
-function connect(serverip) {
-  socket = ioclient(serverip)
-  socket.on("play", function(song) {
-    console.log(song)
-    spawn("bash", ["spotify", "play", song])
-  })
-}
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 
-function playSong(song) {
-  socket.emit("play", song)
-}
-console.log(argv)
-connect("http://localhost:3000")
-// playSong('fede')
+const socket = ioclient("http://localhost:3001")
+socket.on("play", function(uri) {
+  console.log("recieved broadcast, playing " + uri)
+  spawn("bash", ["spotify", "play", "uri", uri])
+})
+
+// connect to broadcasting server
+socket.on("connect_error", function(error){
+  throw new Error(error)
+})
+
+// listen for cli commands via http
+app.post("/play", function(req, res) {
+  const uri = req.body.uri
+  console.log("sending play uri to server: " + uri)
+  socket.emit("play", uri)
+  res.send("ok")
+})
+
+http.listen(3000, function() {})
