@@ -7,7 +7,11 @@ const bodyParser = require("body-parser")
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-const socket = ioclient("http://localhost:3001")
+// TODO: implement UDP broadcast
+// https://gamedev.stackexchange.com/questions/30761/solution-for-lightweight-lan-peer-discovering
+const SERVER_IP = "http://192.168.0.4:8990"
+
+const socket = ioclient(SERVER_IP)
 socket.on("play", function(uri) {
   console.log("recieved broadcast, playing " + uri)
   spawn("bash", ["spotify", "play", "uri", uri])
@@ -26,4 +30,4 @@ app.post("/play", function(req, res) {
   res.send("ok")
 })
 
-http.listen(3000, function() {})
+http.listen(8989, function() {})

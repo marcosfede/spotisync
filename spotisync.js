@@ -17,7 +17,7 @@ cli
 cli
     .command("play <uri>")
     .action((uri, opts) => {
-        axios.post('http://localhost:3000/play', {uri: uri})
+        axios.post('http://localhost:8989/play', {uri: uri})
             .then(res => console.log(res.data))
     })
 
