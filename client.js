@@ -16,6 +16,10 @@ socket.on("play", function(uri) {
   console.log("recieved broadcast, playing " + uri)
   spawn("bash", ["spotify", "play", "uri", uri])
 })
+socket.on("ping", function() {
+    const time = (new Date).getTime()
+    socket.emit(time.toString())
+})
 
 // connect to broadcasting server
 socket.on("connect_error", function(error){
