@@ -15,9 +15,11 @@ const socket = ioclient(SERVER_IP)
 socket.on("play", function(data) {
   console.log("recieved broadcast, playing " + data.uri)
   const currentTime = new Date().getTime()
-  const time = parseInt(data.timestamp, 10) - parseInt(currentTime, 10)
-  console.log("playing in:", time, 'ms')
+  const timestamp = parseInt(data.timestamp)
+  const time = timestamp - parseInt(currentTime, 10)
+  console.log("playing at:", timestamp)
   setTimeout(() => {
+    console.log('executed diff', (new Date).getTime() - timestamp)
     exec("spotify play uri " + data.uri)
   }, time)
 })
