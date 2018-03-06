@@ -1,5 +1,5 @@
 const ioclient = require("socket.io-client")
-const { spawn } = require("child_process")
+const { spawn, exec } = require("child_process")
 const app = require("express")()
 const http = require("http").Server(app)
 const bodyParser = require("body-parser")
@@ -9,20 +9,26 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // TODO: implement UDP broadcast
 // https://gamedev.stackexchange.com/questions/30761/solution-for-lightweight-lan-peer-discovering
-const SERVER_IP = "http://192.168.0.4:8990"
+const SERVER_IP = "http://localhost:8990"
 
 const socket = ioclient(SERVER_IP)
-socket.on("play", function(uri) {
-  console.log("recieved broadcast, playing " + uri)
-  spawn("bash", ["spotify", "play", "uri", uri])
+socket.on("play", function(data) {
+  console.log("recieved broadcast, playing " + data.uri)
+  const currentTime = new Date().getTime()
+  const time = parseInt(data.timestamp, 10) - parseInt(currentTime, 10)
+  console.log("playing in:", time, 'ms')
+  setTimeout(() => {
+    exec("spotify play uri " + data.uri)
+  }, time)
 })
-socket.on("ping", function() {
-    const time = (new Date).getTime()
-    socket.emit(time.toString())
+socket.on("myping", function(_, fn) {
+  console.log("recieved a ping from the server")
+  const time = new Date().getTime()
+  socket.emit(fn(time.toString()))
 })
 
 // connect to broadcasting server
-socket.on("connect_error", function(error){
+socket.on("connect_error", function(error) {
   throw new Error(error)
 })
 
