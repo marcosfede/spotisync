@@ -4,6 +4,7 @@
     "body-parser": "^1.18.2",
     "commander": "^2.14.1",
     "express": "^4.16.2",
+    "shelljs.exec": "^1.1.7",
     "socket.io": "^2.0.4"
   }
 }

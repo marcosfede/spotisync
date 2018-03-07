@@ -1,5 +1,5 @@
 const ioclient = require("socket.io-client")
-const { spawn, exec } = require("child_process")
+const exec = require('shelljs.exec')
 const app = require("express")()
 const http = require("http").Server(app)
 const bodyParser = require("body-parser")
@@ -20,7 +20,8 @@ socket.on("play", function(data) {
   console.log("playing at:", timestamp)
   setTimeout(() => {
     console.log('executed diff', (new Date).getTime() - timestamp)
-    exec("spotify play uri " + data.uri)
+    const cp = exec("spotify play uri " + data.uri)
+    cp.stdin.end()
   }, time)
 })
 socket.on("myping", function(_, fn) {
