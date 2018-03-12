@@ -38,7 +38,7 @@ async function ping() {
   )
   const timestamps = await broadcastPromise(
     io.sockets.volatile.connected,
-    "myping"
+    "_ping"
   )
   const requestTime = new Date().getTime() - requestTimeStart
   console.log("pinging took", requestTime)
